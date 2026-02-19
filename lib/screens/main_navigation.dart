@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
 import 'home_screen.dart';
-import 'cart_screen.dart';
+import 'cart_screen.dart'; // Ahora importará la clase correcta
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
-
   @override
   State<MainNavigation> createState() => _MainNavigationState();
 }
@@ -14,16 +13,11 @@ class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
   final List<Product> _cart = [];
 
-  void _addToCart(Product product) {
-    setState(() => _cart.add(product));
-  }
-
-  void _removeFromCart(int index) {
-    setState(() => _cart.removeAt(index));
-  }
-
-  void _clearCart() {
-    setState(() => _cart.clear());
+  void _addToCart(Product p) {
+    setState(() => _cart.add(p));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("${p.name} agregado"), backgroundColor: const Color(0xFFFF4B4B)),
+    );
   }
 
   @override
@@ -31,26 +25,24 @@ class _MainNavigationState extends State<MainNavigation> {
     final List<Widget> _screens = [
       HomeScreen(onAdd: _addToCart),
       CartScreen(
-        cartItems: _cart, 
-        onRemove: _removeFromCart,
-        onCheckoutComplete: _clearCart,
+        cartItems: _cart,
+        onRemove: (index) => setState(() => _cart.removeAt(index)),
+        onCheckoutComplete: () => setState(() => _cart.clear()),
       ),
     ];
 
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) => setState(() => _currentIndex = index),
-        destinations: [
-          const NavigationDestination(icon: Icon(Icons.storefront), label: 'Tienda'),
-          NavigationDestination(
-            icon: Badge(
-              label: Text(_cart.length.toString()),
-              isLabelVisible: _cart.isNotEmpty,
-              child: const Icon(Icons.shopping_cart_outlined),
-            ),
-            label: 'Carrito',
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (i) => setState(() => _currentIndex = i),
+        selectedItemColor: const Color(0xFFFF4B4B),
+        type: BottomNavigationBarType.fixed,
+        items: [
+          const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+            icon: Badge(label: Text("${_cart.length}"), child: const Icon(Icons.shopping_cart)), 
+            label: 'Carrito'
           ),
         ],
       ),
