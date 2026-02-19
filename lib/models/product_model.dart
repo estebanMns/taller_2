@@ -1,13 +1,14 @@
 class Product {
-  final String id;
-  final String name;
-  final String image;
+  final String id, name, image, description;
   final double price;
+  final List<String> gallery; // Simulación de múltiples fotos
 
   Product({
-    required this.id,
-    required this.name,
+    required this.id, 
+    required this.name, 
+    required this.price, 
     required this.image,
-    required this.price,
+    required this.description,
+    required this.gallery,
   });
 }
